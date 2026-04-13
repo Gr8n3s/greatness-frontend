@@ -2,10 +2,6 @@ import { useState } from "react";
 
 function App() {
 
-  // ========================
-  // STATE
-  // ========================
-
   const API = process.env.REACT_APP_API_URL;
 
   const [newItem, setNewItem] = useState("");
@@ -21,7 +17,6 @@ function App() {
   const [selectedUser, setSelectedUser] = useState("");
 
   const [history, setHistory] = useState([]);
-  const [fairness, setFairness] = useState([]);
 
   // ========================
   // LOGIN
@@ -70,7 +65,6 @@ function App() {
     });
 
     alert("Giveaway Created!");
-
     getGiveaway();
 
   };
@@ -103,15 +97,6 @@ function App() {
     const data = await res.json();
 
     setHistory(data.history);
-
-  };
-
-  const getFairness = async () => {
-
-    const res = await fetch(`${API}/fairness`);
-    const data = await res.json();
-
-    setFairness(data.users);
 
   };
 
@@ -203,9 +188,7 @@ function App() {
 
           <input
             placeholder="Name"
-            onChange={(e) =>
-              setName(e.target.value)
-            }
+            onChange={(e) => setName(e.target.value)}
             style={{
               width: "100%",
               padding: "10px",
@@ -217,9 +200,7 @@ function App() {
           <input
             type="password"
             placeholder="Password"
-            onChange={(e) =>
-              setPassword(e.target.value)
-            }
+            onChange={(e) => setPassword(e.target.value)}
             style={{
               width: "100%",
               padding: "10px",
@@ -260,13 +241,6 @@ function App() {
             style={{ marginLeft: "10px" }}
           >
             Load History
-          </button>
-
-          <button
-            onClick={getFairness}
-            style={{ marginLeft: "10px" }}
-          >
-            Load Fairness
           </button>
 
         </div>
