@@ -1,9 +1,11 @@
 import { useState } from "react";
 
 function App() {
-
   const API = process.env.REACT_APP_API_URL;
 
+  // ========================
+  // STATE
+  // ========================
   const [newItem, setNewItem] = useState("");
   const [newOwner, setNewOwner] = useState("");
 
@@ -21,37 +23,34 @@ function App() {
   // ========================
   // LOGIN
   // ========================
-
   const login = async () => {
+    try {
+      const res = await fetch(`${API}/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name, password }),
+      });
 
-    const res = await fetch(`${API}/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        name,
-        password,
-      }),
-    });
+      const data = await res.json();
 
-    const data = await res.json();
-
-    if (data.token) {
-      setToken(data.token);
-      alert("Login successful");
-    } else {
-      alert(data.message);
+      if (data.token) {
+        setToken(data.token);
+        alert("Login successful");
+      } else {
+        alert(data.message || "Login failed");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Network error during login");
     }
-
   };
 
   // ========================
   // CREATE GIVEAWAY
   // ========================
-
   const createGiveaway = async () => {
-
     await fetch(`${API}/create-giveaway`, {
       method: "POST",
       headers: {
@@ -66,46 +65,33 @@ function App() {
 
     alert("Giveaway Created!");
     getGiveaway();
-
   };
 
   // ========================
   // LOAD DATA
   // ========================
-
   const getGiveaway = async () => {
-
     const res = await fetch(`${API}/giveaway`);
     const data = await res.json();
-
     setGiveaway(data);
-
   };
 
   const getUsers = async () => {
-
     const res = await fetch(`${API}/users`);
     const data = await res.json();
-
-    setUsers(data.users);
-
+    setUsers(data.users || []);
   };
 
   const getHistory = async () => {
-
     const res = await fetch(`${API}/history`);
     const data = await res.json();
-
-    setHistory(data.history);
-
+    setHistory(data.history || []);
   };
 
   // ========================
   // ACTIONS
   // ========================
-
   const sendToGreatness = async () => {
-
     await fetch(`${API}/greatness`, {
       method: "POST",
       headers: {
@@ -115,28 +101,22 @@ function App() {
 
     getGiveaway();
     getHistory();
-
   };
 
   const accept = async () => {
-
     await fetch(`${API}/accept`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: token,
       },
-      body: JSON.stringify({
-        user: name,
-      }),
+      body: JSON.stringify({ user: name }),
     });
 
     getGiveaway();
-
   };
 
   const transfer = async () => {
-
     await fetch(`${API}/transfer`, {
       method: "POST",
       headers: {
@@ -151,13 +131,11 @@ function App() {
 
     getGiveaway();
     getHistory();
-
   };
 
   // ========================
   // UI
   // ========================
-
   return (
     <div
       style={{
@@ -167,13 +145,9 @@ function App() {
         padding: "20px",
       }}
     >
-
-      <h1 style={{ textAlign: "center" }}>
-        🎁 GREATNESS GIVEAWAY
-      </h1>
+      <h1 style={{ textAlign: "center" }}>🎁 GREATNESS GIVEAWAY</h1>
 
       {!token ? (
-
         <div
           style={{
             maxWidth: "400px",
@@ -183,16 +157,12 @@ function App() {
             borderRadius: "10px",
           }}
         >
-
           <h3>Login</h3>
 
           <input
             placeholder="Name"
             onChange={(e) => setName(e.target.value)}
-            style={{
-              width: "100%",
-              padding: "10px",
-            }}
+            style={{ width: "100%", padding: "10px" }}
           />
 
           <br /><br />
@@ -201,52 +171,31 @@ function App() {
             type="password"
             placeholder="Password"
             onChange={(e) => setPassword(e.target.value)}
-            style={{
-              width: "100%",
-              padding: "10px",
-            }}
+            style={{ width: "100%", padding: "10px" }}
           />
 
           <br /><br />
 
           <button
             onClick={login}
-            style={{
-              width: "100%",
-              padding: "10px",
-            }}
+            style={{ width: "100%", padding: "10px" }}
           >
             Login
           </button>
-
         </div>
-
       ) : (
-
         <div style={{ maxWidth: "600px", margin: "auto" }}>
+          <button onClick={getUsers}>Load Users</button>
 
-          <button onClick={getUsers}>
-            Load Users
-          </button>
-
-          <button
-            onClick={getGiveaway}
-            style={{ marginLeft: "10px" }}
-          >
+          <button onClick={getGiveaway} style={{ marginLeft: "10px" }}>
             Load Giveaway
           </button>
 
-          <button
-            onClick={getHistory}
-            style={{ marginLeft: "10px" }}
-          >
+          <button onClick={getHistory} style={{ marginLeft: "10px" }}>
             Load History
           </button>
-
         </div>
-
       )}
-
     </div>
   );
 }
